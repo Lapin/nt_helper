@@ -28,9 +28,16 @@ class MobileApp extends StatelessWidget {
       create: (context) => DistingCubit(database),
       child: WidgetsApp(
         color: const Color(0xFF0A0A0A), // AppColors.background
-        home: const ConnectionScreen(),
-        // Uncomment to see component demo:
-        // home: const ComponentDemoScreen(),
+        onGenerateRoute: (settings) {
+          return PageRouteBuilder(
+            settings: settings,
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return const ConnectionScreen();
+              // Uncomment to see component demo:
+              // return const ComponentDemoScreen();
+            },
+          );
+        },
         // No Material or Cupertino - pure custom widgets
       ),
     );
