@@ -21,201 +21,236 @@ class ConnectionScreen extends StatelessWidget {
       child: SafeArea(
         child: BlocBuilder<DistingCubit, DistingState>(
           builder: (context, state) {
-            return Column(
-              children: [
-                // Status badge at top center
-                if (state is DistingStateConnected)
-                  Padding(
-                    padding: const EdgeInsets.only(top: AppSpacing.space4),
-                    child: const StatusBadge(
-                      label: 'Disting NT Detected!',
-                      type: StatusBadgeType.connected,
-                    ),
-                  ),
+            final isConnected = state is DistingStateConnected;
 
-                // Main content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.screenPaddingHorizontal,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.screenPaddingHorizontal,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: AppSpacing.space4),
+
+                    // Title with settings icon
+                    Row(
                       children: [
-                        const SizedBox(height: AppSpacing.space6),
-
-                        // Title with settings icon
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Please Connect Disting NT...',
-                                style: AppTypography.displayMedium.copyWith(
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
+                        Expanded(
+                          child: Text(
+                            'Please Connect Disting NT...',
+                            style: AppTypography.displayMedium.copyWith(
+                              color: AppColors.textPrimary,
+                              fontSize: 28,
                             ),
-                            // Settings icon placeholder
-                            Container(
-                              width: AppSpacing.iconSizeLarge,
-                              height: AppSpacing.iconSizeLarge,
-                              decoration: BoxDecoration(
-                                color: AppColors.surface,
-                                borderRadius: BorderRadius.circular(
-                                  AppSpacing.radiusSmall,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '⚙',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: AppSpacing.sectionGap),
-
-                        // Device selectors
-                        _buildDeviceSelector('Input Device', state),
-                        const SizedBox(height: AppSpacing.formFieldGap),
-                        _buildDeviceSelector('Output Device', state),
-                        const SizedBox(height: AppSpacing.formFieldGap),
-                        _buildDeviceSelector('Device ID', state),
-
-                        const SizedBox(height: AppSpacing.space6),
-
-                        // Listening/Connect button
-                        _buildConnectionButton(context, state),
-
-                        const SizedBox(height: AppSpacing.space4),
-
-                        // Refresh connection text
-                        GestureDetector(
-                          onTap: () {
-                            // TODO: Implement refresh
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '↻',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.space2),
-                              Text(
-                                'Refresh Connection',
-                                style: AppTypography.bodyMedium.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
                           ),
                         ),
-
-                        const SizedBox(height: AppSpacing.sectionGap),
-
-                        // Hardware image placeholder
+                        // Settings icon
                         Container(
-                          height: 200,
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
                             color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusLarge,
-                            ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Center(
                             child: Text(
-                              'Disting NT\nHardware Visualization',
-                              textAlign: TextAlign.center,
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: AppColors.textTertiary,
+                              '⚙',
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ),
                         ),
-
-                        const SizedBox(height: AppSpacing.sectionGap),
-
-                        // Connect button (primary)
-                        PrimaryButton(
-                          label: 'Connect',
-                          onPressed: state is DistingStateConnected
-                              ? () => _handleConnect(context)
-                              : null,
-                          variant: PrimaryButtonVariant.filled,
-                          enabled: state is DistingStateConnected,
-                        ),
-
-                        const SizedBox(height: AppSpacing.space3),
-
-                        // Work offline button
-                        PrimaryButton(
-                          label: 'Work offline',
-                          onPressed: () => _handleOffline(context),
-                          variant: PrimaryButtonVariant.outlined,
-                        ),
-
-                        const SizedBox(height: AppSpacing.space3),
-
-                        // How to use button
-                        PrimaryButton(
-                          label: 'How to use NT Helper',
-                          onPressed: () {
-                            // TODO: Show help
-                          },
-                          variant: PrimaryButtonVariant.outlined,
-                        ),
-
-                        const SizedBox(height: AppSpacing.sectionGap),
-
-                        // Demo mode section
-                        Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                'If you don\'t have a Disting yet, you can check out the',
-                                textAlign: TextAlign.center,
-                                style: AppTypography.bodyMedium.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              Text(
-                                'features with the demo mode.',
-                                textAlign: TextAlign.center,
-                                style: AppTypography.bodyMedium.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.space4),
-                              GestureDetector(
-                                onTap: () => _handleDemoMode(context),
-                                child: Text(
-                                  'Demo Mode',
-                                  style: AppTypography.headingMedium.copyWith(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: AppSpacing.sectionGap),
                       ],
                     ),
-                  ),
+
+                    const SizedBox(height: 24),
+
+                    // Compact device selectors in a row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildCompactSelector('Input Device', '-'),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildCompactSelector('Output Device', '-'),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildCompactSelector('Device ID', '-'),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Status badge or Listening button
+                    if (isConnected)
+                      Center(
+                        child: StatusBadge(
+                          label: 'Disting NT Detected!',
+                          type: StatusBadgeType.connected,
+                        ),
+                      )
+                    else
+                      Container(
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryYellow,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Listening...',
+                            style: AppTypography.labelLarge.copyWith(
+                              color: AppColors.tagText,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 12),
+
+                    // Refresh connection
+                    GestureDetector(
+                      onTap: () {
+                        // TODO: Refresh
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '↻',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Refresh Connection',
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // LARGE Hardware visualization (centerpiece!)
+                    Container(
+                      height: 280,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // ZZZ icon
+                          Text('💤', style: TextStyle(fontSize: 48)),
+                          const SizedBox(height: 16),
+                          // Hardware text
+                          Text(
+                            'expert sleepers',
+                            style: AppTypography.headingMedium.copyWith(
+                              color: AppColors.primaryCyan,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          Text(
+                            'disting NT',
+                            style: AppTypography.headingMedium.copyWith(
+                              color: AppColors.primaryCyan,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Connect button (enabled only when connected)
+                    PrimaryButton(
+                      label: 'Connect',
+                      onPressed: isConnected
+                          ? () => _handleConnect(context)
+                          : null,
+                      variant: PrimaryButtonVariant.filled,
+                      enabled: isConnected,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Work offline button
+                    PrimaryButton(
+                      label: 'Work offline',
+                      onPressed: () => _handleOffline(context),
+                      variant: PrimaryButtonVariant.outlined,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // How to use NT Helper button
+                    PrimaryButton(
+                      label: 'How to use NT Helper',
+                      onPressed: () {
+                        // TODO: Show help
+                      },
+                      variant: PrimaryButtonVariant.outlined,
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Demo mode section
+                    Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            'If you don\'t have a Disting yet, you can check out the',
+                            textAlign: TextAlign.center,
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Text(
+                            'features with the demo mode.',
+                            textAlign: TextAlign.center,
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          GestureDetector(
+                            onTap: () => _handleDemoMode(context),
+                            child: Text(
+                              'Demo Mode',
+                              style: AppTypography.headingMedium.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+                  ],
                 ),
-              ],
+              ),
             );
           },
         ),
@@ -223,29 +258,24 @@ class ConnectionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDeviceSelector(String label, DistingState state) {
-    // Get current value based on state
-    String value = '-';
-    if (state is DistingStateConnected) {
-      value = '1'; // Example connected value
-    }
-
+  Widget _buildCompactSelector(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: AppTypography.bodyMedium.copyWith(
+          style: AppTypography.bodySmall.copyWith(
             color: AppColors.textSecondary,
+            fontSize: 11,
           ),
         ),
-        const SizedBox(height: AppSpacing.formLabelGap),
+        const SizedBox(height: 4),
         Container(
-          height: AppSpacing.minimumTouchTarget,
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(color: AppColors.borderDark, width: 1),
           ),
           child: Row(
@@ -253,13 +283,13 @@ class ConnectionScreen extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: AppTypography.bodyLarge.copyWith(
+                style: AppTypography.bodyMedium.copyWith(
                   color: AppColors.textPrimary,
                 ),
               ),
               Text(
                 '▼',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -268,44 +298,17 @@ class ConnectionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConnectionButton(BuildContext context, DistingState state) {
-    if (state is DistingStateConnected) {
-      return Container(); // Hide when connected
-    }
-
-    return Container(
-      height: AppSpacing.minimumTouchTarget,
-      decoration: BoxDecoration(
-        color: AppColors.primaryYellow,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-      ),
-      child: Center(
-        child: Text(
-          'Listening...',
-          style: AppTypography.labelLarge.copyWith(
-            color: AppColors.tagText,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-
   void _handleConnect(BuildContext context) {
-    // Connect to device
-    final cubit = context.read<DistingCubit>();
-    // TODO: Implement actual connection logic
+    // TODO: Implement actual connection
     print('Connect tapped');
   }
 
   void _handleOffline(BuildContext context) {
-    // Switch to offline mode
     final cubit = context.read<DistingCubit>();
     cubit.goOffline();
   }
 
   void _handleDemoMode(BuildContext context) {
-    // Enter demo mode
     final cubit = context.read<DistingCubit>();
     cubit.onDemo();
   }
